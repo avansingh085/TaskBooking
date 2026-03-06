@@ -1,0 +1,36 @@
+Architecture Notes for TaskBooking System
+
+1. How overlapping bookings are prevented:
+   - The system prevents overlapping bookings through database-level checks in the booking creation process.
+   - Before creating a new booking, the BookingService calls the isRoomAvailable method, which queries the database for any existing bookings on the same room that overlap with the requested time period.
+   - The overlap check uses the SQL condition: WHERE room_id = ? AND start_date <= ? AND end_date >= ? (with parameters [room_id, end_date, start_date])
+   - This ensures that no two bookings can exist for the same room where the time periods overlap (including partial overlaps).
+   - Additionally, the create method includes a transaction with a duplicate check to handle race conditions in concurrent requests.
+   - If an overlap is detected, an ApiError with CONFLICT status is thrown, preventing the booking from being created.
+
+2. Why you structured the project the way you did:
+   - The project follows a modular, layered architecture separating concerns for maintainability and scalability.
+   - Backend is structured with MVC pattern: Models handle data operations, Controllers manage HTTP requests/responses, Services contain business logic, and Routes define API endpoints.
+   - Frontend uses React with a component-based structure, organized by features (auth, pages) and shared components.
+   - Separation of frontend and backend allows independent development and deployment.
+   - Docker containerization enables consistent environments across development, testing, and production.
+   - MySQL database provides relational data storage suitable for booking systems requiring complex queries and transactions.
+   - The structure supports RESTful API design principles for clear, predictable communication between client and server.
+
+3. How frontend and backend communicate:
+   - Frontend and backend communicate through a RESTful API using HTTP requests.
+   - The frontend uses an apiClient (likely axios) configured in src/api/apiClient.js to make HTTP calls to the backend.
+   - API endpoints are organized by resource: /auth, /bookings, /rooms, /users.
+   - Authentication is handled via JWT tokens stored in localStorage, included in Authorization headers for protected routes.
+   - Requests include JSON payloads for POST/PUT operations, and responses follow a consistent format with status codes, messages, and data.
+   - Error handling includes proper HTTP status codes and error messages propagated from backend to frontend.
+
+4. How you would scale this system in the future:
+   - Horizontal scaling: Deploy multiple instances of the application behind a load balancer  to handle increased traffic.
+   - Database scaling: Implement read replicas for read-heavy operations, consider sharding if user/booking volume grows significantly.
+   - Caching: Add Redis for session storage, API response caching, and frequently accessed data like room availability.
+   - Microservices: Split into separate services (auth, booking, room management) for independent scaling and deployment.
+   - CDN: Use a Content Delivery Network for static frontend assets to reduce latency.
+   - Database optimization: Add indexes on frequently queried fields (room_id, dates), implement connection pooling.
+   - Asynchronous processing: Use message queues  for non-critical operations like email notifications.
+ 
