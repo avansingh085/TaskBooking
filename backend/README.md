@@ -28,8 +28,8 @@ A Node.js backend API for a room booking system built with Express.js, MySQL, an
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd TaskBooking/backend
+git clone https://github.com/avansingh085/TaskBooking.git
+cd backend
 ```
 
 ### 2. Install Dependencies

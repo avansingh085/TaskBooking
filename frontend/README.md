@@ -30,7 +30,9 @@ A modern React application for room booking management, built with Vite, Redux T
 
 1. Clone the repository and navigate to the frontend directory:
    ```bash
+   git clone https://github.com/avansingh085/TaskBooking.git
    cd frontend
+
    ```
 
 2. Install dependencies:
